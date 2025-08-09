@@ -10,9 +10,9 @@ fi
 source .venv/bin/activate
 
 echo "Installing/updating dependencies from requirements.txt..."
-pip install --upgrade pip
-pip install -r requirements.txt
+#pip install --upgrade pip
+#pip install -r requirements.txt
 
 echo "Running pytest..."
-pytest "$@"
+PYTHONPATH=$(pwd)  pytest "$@"
 exit $?
