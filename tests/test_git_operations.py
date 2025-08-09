@@ -3,7 +3,7 @@ import shutil
 import tempfile
 
 import pytest
-from integration.functions.git_operations import status, auto_commit
+from integration.tools.git_tools import status, auto_commit
 
 def write_file(path, text):
     with open(path, "w") as f:

@@ -59,7 +59,11 @@ class LLMAgent:
         for modname, mod in tool_list:
             for name, fn in vars(mod).items():
                 if callable(fn) and not name.startswith("_"):
-                    sig = str(inspect.signature(fn))
+                    # Safely get signature; skip if uninspectable
+                    try:
+                        sig = str(inspect.signature(fn))
+                    except (ValueError, TypeError):
+                        continue
                     lines.append(f"{modname}.{name}{sig}")
         return "\n".join(lines)
 

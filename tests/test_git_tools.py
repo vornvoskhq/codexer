@@ -1,5 +1,5 @@
 import os
-from integration.tools import git_tools
+from integration.tools.git_tools import status, auto_commit
 
 def write_file(path, text):
     with open(path, "w") as f:
@@ -13,8 +13,8 @@ def test_git_status_and_commit(tmp_path):
 
     file1 = repo_dir / "file1.txt"
     write_file(file1, "hello world")
-    s1 = git_tools.status(str(repo_dir))
+    s1 = status(str(repo_dir))
     assert "file1.txt" in s1["untracked"]
 
-    sha = git_tools.auto_commit(str(repo_dir), ["file1.txt"], ai_message=False)
+    sha = auto_commit(str(repo_dir), ["file1.txt"], ai_message=False)
     assert isinstance(sha, str)
