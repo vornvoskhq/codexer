@@ -76,7 +76,7 @@ def test_run_git_status(monkeypatch):
     def fake_git_status(p):
         assert p == path
         return "On branch main\nnothing to commit"
-    monkeypatch.setattr("integration.tools.git_tools.status", fake_git_status)
+    monkeypatch.setattr("integration.framework.functions_git.git_status", fake_git_status)
     f = io.StringIO()
     with redirect_stdout(f):
         result = agent.run_git_status(path)
@@ -91,7 +91,7 @@ def test_run_git_commit(monkeypatch):
     def fake_git_commit(p, fs):
         assert p == path and fs == files
         return "Committed 2 files"
-    monkeypatch.setattr("integration.tools.git_tools.auto_commit", fake_git_commit)
+    monkeypatch.setattr("integration.framework.functions_git.git_commit", fake_git_commit)
     f = io.StringIO()
     with redirect_stdout(f):
         result = agent.run_git_commit(path, files)

@@ -29,11 +29,7 @@ def status(repo_path: str) -> Dict[str, Any]:
     untracked = list(repo.untracked_files)
 
     # Staged files (diff between index and HEAD)
-    try:
-        staged = [item.a_path for item in repo.index.diff("HEAD") if item.change_type != "D"]
-    except Exception:
-        # Repository may have no HEAD yet
-        staged = []
+    staged = [item.a_path for item in repo.index.diff("HEAD") if item.change_type != "D"]
 
     # Modified files (unstaged)
     modified = [item.a_path for item in repo.index.diff(None) if item.change_type != "D"]

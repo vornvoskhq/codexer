@@ -14,5 +14,5 @@ echo "Installing/updating dependencies from requirements.txt..."
 #pip install -r requirements.txt
 
 echo "Running pytest..."
-PYTHONPATH=$(pwd) pytest "$@"
+PYTHONPATH=$(pwd)  pytest "$@"
 exit $?

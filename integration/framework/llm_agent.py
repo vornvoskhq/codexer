@@ -1,16 +1,18 @@
 import os
+import requests
 import re
 from typing import Optional
-from codex.llm.openrouter import query as openrouter_query
 
 from integration.framework.agent import AgenticExecutor
-
-# Import TOOLS mapping from codex-lite
-import sys
-import importlib
-
-codex_main = importlib.import_module("codex_lite.main")
-TOOLS = codex_main.TOOLS
+from integration.tools import (
+    file_tools,
+    git_tools,
+    code_analysis,
+    project_tools,
+    advanced_agent_tools,
+    ide_tools,
+    specialized_tools,
+)
 
 class LLMAgent:
     """
@@ -34,51 +36,7 @@ class LLMAgent:
         if not self.api_key:
             raise ValueError("OpenRouter API key must be set in OPENROUTER_API_KEY env variable.")
         self.executor = AgenticExecutor()
-        # Load tool config
-        import yaml
-        try:
-            cfg = yaml.safe_load(open('agent_tools_config.yaml')) or {}
-            self.tool_enabled = {k: v for k, v in cfg.get('tools', {}).items()}
-        except Exception:
-            # default all enabled
-            self.tool_enabled = {name: True for name in TOOLS}
         self.tools_doc = self._build_tools_doc()
-        # Load system prompts from config
-        import toml
-        cfg_path = os.path.expanduser('~/.codex/config.toml')
-        try:
-            cfg = toml.loads(open(cfg_path).read())
-            sp = cfg.get('system_prompt')
-            spf = cfg.get('system_prompt_file')
-            # read long prompt
-            if spf:
-                self.long_system_prompt = open(os.path.expanduser(spf)).read()
-            else:
-                self.long_system_prompt = sp or ''
-            # short fallback
-            self.short_system_prompt = sp or ''
-        except Exception:
-            self.long_system_prompt = ''
-            self.short_system_prompt = ''
-        self._first_run = True
-        # Load system prompts from config
-        import toml
-        cfg_path = os.path.expanduser('~/.codex/config.toml')
-        try:
-            cfg = toml.loads(open(cfg_path).read())
-            sp = cfg.get('system_prompt')
-            spf = cfg.get('system_prompt_file')
-            # read long prompt
-            if spf:
-                self.long_system_prompt = open(os.path.expanduser(spf)).read()
-            else:
-                self.long_system_prompt = sp or ''
-            # short fallback
-            self.short_system_prompt = sp or ''
-        except Exception:
-            self.long_system_prompt = ''
-            self.short_system_prompt = ''
-        self._first_run = True
 
     def _build_tools_doc(self) -> str:
         """
@@ -88,13 +46,107 @@ class LLMAgent:
             str: Multiline string listing all available tools.
         """
         import inspect
+        tool_list = [
+            ("file_tools", file_tools),
+            ("git_tools", git_tools),
+            ("code_analysis", code_analysis),
+            ("project_tools", project_tools),
+            ("advanced_agent_tools", advanced_agent_tools),
+            ("ide_tools", ide_tools),
+            ("specialized_tools", specialized_tools),
+        ]
         lines = []
-        for tool_name, fn in TOOLS.items():
-            if not self.tool_enabled.get(tool_name, True):
-            raise ValueError(f"Tool '{tool_name}' is disabled by configuration.")
+        for modname, mod in tool_list:
+            for name, fn in vars(mod).items():
+                if callable(fn) and not name.startswith("_"):
+                    sig = str(inspect.signature(fn))
+                    lines.append(f"{modname}.{name}{sig}")
+        return "\n".join(lines)
+
+    def _send_to_llm(self, messages):
+        """
+        Send the conversation to OpenRouter LLM and return the response text.
+
+        Args:
+            messages (list): List of dicts with 'role' and 'content'.
+
+        Returns:
+            str: The LLM's response.
+        """
+        url = "https://openrouter.ai/api/v1/chat/completions"
+        headers = {
+            "Authorization": f"Bearer {self.api_key}",
+            "HTTP-Referer": "http://localhost",
+            "X-Title": "Codex Agent CLI",
+            "Content-Type": "application/json",
+        }
+        payload = {
+            "model": "glm-4.5-air",
+            "messages": messages,
+            "stream": False,
+        }
+        resp = requests.post(url, headers=headers, json=payload, timeout=60)
+        resp.raise_for_status()
+        data = resp.json()
+        return data["choices"][0]["message"]["content"]
+
+    def _parse_tool_call(self, text: str):
+        """
+        Parse the LLM response for a tool call in the format TOOL: <tool_name>(<args>).
+
+        Returns:
+            tuple (tool_name, args_str) or None.
+        """
+        m = re.search(r"TOOL:\s*(\w+)\((.*?)\)", text, re.DOTALL)
+        if m:
+            return m.group(1), m.group(2)
+        return None
+
+    def _parse_final_answer(self, text: str) -> Optional[str]:
+        """
+        Parse for a final answer marker 'FINAL ANSWER:'.
+
+        Returns:
+            str or None
+        """
+        m = re.search(r"FINAL ANSWER:\s*(.+)", text, re.DOTALL)
+        if m:
+            return m.group(1).strip()
+        return None
+
+    def _execute_tool(self, tool_name: str, args_str: str):
+        """
+        Execute the tool via AgenticExecutor, parsing args.
+
+        Args:
+            tool_name (str): Name of the method on AgenticExecutor (e.g. 'run_file_read')
+            args_str (str): Argument string from LLM (comma separated or space separated)
+
+        Returns:
+            str: Output from the tool
+        """
+        # Map tool_name to AgenticExecutor method
+        method_map = {
+            'file_read': self.executor.run_file_read,
+            'file_write': self.executor.run_file_write,
+            'list_directory': self.executor.run_directory_list,
+            'find_file_upwards': self.executor.run_find_up,
+            'git_status': self.executor.run_git_status,
+            'git_commit': self.executor.run_git_commit,
+        }
+        # parse args (naively split by comma or space)
+        arglist = []
+        if args_str:
+            # Try to split by comma if present, else space
+            if ',' in args_str:
+                arglist = [a.strip() for a in args_str.split(',') if a.strip()]
+            else:
+                arglist = [a.strip() for a in args_str.split() if a.strip()]
         if tool_name in method_map:
             return method_map[tool_name](*arglist)
-        raise ValueError(f"Unknown tool: {tool_name}")
+        # fallback: call raw function from TOOLS mapping as last resort
+        from codex_lite.main import TOOLS
+        return TOOLS[tool_name](*arglist)
 
     def run(self, prompt: str) -> str:
         """
@@ -108,9 +160,12 @@ class LLMAgent:
             str: The final answer from the LLM.
         """
         messages = []
-        # Use long system prompt on first run, else default
-        sys_msg = self.long_system_prompt if self._first_run and self.long_system_prompt else self._build_system_msg()
-        self._first_run = False
+        sys_msg = (
+            "You are a coding agent. You have access to the following tools:\n"
+            f"{self.tools_doc}\n"
+            "To use a tool, respond with TOOL: <tool_name>(<args>) on a line by itself.\n"
+            "When you are done, reply with FINAL ANSWER: <your answer>."
+        )
         messages.append({"role": "system", "content": sys_msg})
         messages.append({"role": "user", "content": prompt})
 
@@ -129,16 +184,5 @@ class LLMAgent:
             elif final:
                 return final
             else:
+                # If neither, append the message and prompt again
                 messages.append({"role": "assistant", "content": llm_response})
-
-    def _send_to_llm(self, messages):
-        """
-        Send the conversation to OpenRouter LLM and return the response text.
-
-        Args:
-            messages (list): List of dicts with 'role' and 'content'.
-
-        Returns:
-            str: The LLM's response.
-        """
-        return openrouter_query(messages, api_key=self.api_key, model='glm-4.5-air', stream=False)
