@@ -4,5 +4,6 @@ requests
 PyYAML
 toml
 prompt_toolkit
-# prompt_toolkit for multiline input
+PyYAML
 toml
+# prompt_toolkit for multiline input

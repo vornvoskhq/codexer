@@ -94,8 +94,7 @@ class LLMAgent:
             raise ValueError(f"Tool '{tool_name}' is disabled by configuration.")
         if tool_name in method_map:
             return method_map[tool_name](*arglist)
-        else:
-            raise ValueError(f"Unknown tool: {tool_name}")
+        raise ValueError(f"Unknown tool: {tool_name}")
 
     def run(self, prompt: str) -> str:
         """
