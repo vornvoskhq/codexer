@@ -2,3 +2,5 @@ pytest
 GitPython
 requests
 PyYAML
+toml
+toml

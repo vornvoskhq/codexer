@@ -43,6 +43,42 @@ class LLMAgent:
             # default all enabled
             self.tool_enabled = {name: True for name in TOOLS}
         self.tools_doc = self._build_tools_doc()
+        # Load system prompts from config
+        import toml
+        cfg_path = os.path.expanduser('~/.codex/config.toml')
+        try:
+            cfg = toml.loads(open(cfg_path).read())
+            sp = cfg.get('system_prompt')
+            spf = cfg.get('system_prompt_file')
+            # read long prompt
+            if spf:
+                self.long_system_prompt = open(os.path.expanduser(spf)).read()
+            else:
+                self.long_system_prompt = sp or ''
+            # short fallback
+            self.short_system_prompt = sp or ''
+        except Exception:
+            self.long_system_prompt = ''
+            self.short_system_prompt = ''
+        self._first_run = True
+        # Load system prompts from config
+        import toml
+        cfg_path = os.path.expanduser('~/.codex/config.toml')
+        try:
+            cfg = toml.loads(open(cfg_path).read())
+            sp = cfg.get('system_prompt')
+            spf = cfg.get('system_prompt_file')
+            # read long prompt
+            if spf:
+                self.long_system_prompt = open(os.path.expanduser(spf)).read()
+            else:
+                self.long_system_prompt = sp or ''
+            # short fallback
+            self.short_system_prompt = sp or ''
+        except Exception:
+            self.long_system_prompt = ''
+            self.short_system_prompt = ''
+        self._first_run = True
 
     def _build_tools_doc(self) -> str:
         """
@@ -73,7 +109,9 @@ class LLMAgent:
             str: The final answer from the LLM.
         """
         messages = []
-        sys_msg = self._build_system_msg()
+        # Use long system prompt on first run, else default
+        sys_msg = self.long_system_prompt if self._first_run and self.long_system_prompt else self._build_system_msg()
+        self._first_run = False
         messages.append({"role": "system", "content": sys_msg})
         messages.append({"role": "user", "content": prompt})
 
