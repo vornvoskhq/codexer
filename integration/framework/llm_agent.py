@@ -1,7 +1,7 @@
 import os
-import requests
 import re
 from typing import Optional
+from codex.llm.openrouter import query as openrouter_query
 
 from integration.framework.agent import AgenticExecutor
 
@@ -130,3 +130,15 @@ class LLMAgent:
                 return final
             else:
                 messages.append({"role": "assistant", "content": llm_response})
+
+    def _send_to_llm(self, messages):
+        """
+        Send the conversation to OpenRouter LLM and return the response text.
+
+        Args:
+            messages (list): List of dicts with 'role' and 'content'.
+
+        Returns:
+            str: The LLM's response.
+        """
+        return openrouter_query(messages, api_key=self.api_key, model='glm-4.5-air', stream=False)
