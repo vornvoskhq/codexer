@@ -4,15 +4,13 @@ import re
 from typing import Optional
 
 from integration.framework.agent import AgenticExecutor
-from integration.tools import (
-    file_tools,
-    git_tools,
-    code_analysis,
-    project_tools,
-    advanced_agent_tools,
-    ide_tools,
-    specialized_tools,
-)
+
+# Import TOOLS mapping from codex-lite
+import sys
+import importlib
+
+codex_main = importlib.import_module("codex-lite.main".replace("-", "_"))
+TOOLS = codex_main.TOOLS
 
 class LLMAgent:
     """
@@ -46,26 +44,31 @@ class LLMAgent:
             str: Multiline string listing all available tools.
         """
         import inspect
-        tool_list = [
-            ("file_tools", file_tools),
-            ("git_tools", git_tools),
-            ("code_analysis", code_analysis),
-            ("project_tools", project_tools),
-            ("advanced_agent_tools", advanced_agent_tools),
-            ("ide_tools", ide_tools),
-            ("specialized_tools", specialized_tools),
-        ]
         lines = []
-        for modname, mod in tool_list:
-            for name, fn in vars(mod).items():
-                if callable(fn) and not name.startswith("_"):
-                    # Safely get signature; skip if uninspectable
-                    try:
-                        sig = str(inspect.signature(fn))
-                    except (ValueError, TypeError):
-                        continue
-                    lines.append(f"{modname}.{name}{sig}")
+        for tool_name, fn in TOOLS.items():
+            try:
+                sig = str(inspect.signature(fn))
+            except (ValueError, TypeError):
+                continue
+            lines.append(f"{tool_name}{sig}")
         return "\n".join(lines)
+
+    def _build_system_msg(self) -> str:
+        """
+        Build a SYSTEM message describing the agent's capabilities and tools.
+
+        Returns:
+            str: The system message for the LLM.
+        """
+        return (
+            "You are a fully autonomous coding agent. "
+            "You can read, write, list, find, and modify files in the current directory. "
+            "Use these tools to edit the codebase and persist changes.\n"
+            "You have access to these tools:\n"
+            f"{self.tools_doc}\n"
+            "To use a tool, respond with TOOL: <tool_name>(<args>) on a line by itself.\n"
+            "When you are done, reply with FINAL ANSWER: <your answer>."
+        )
 
     def _send_to_llm(self, messages):
         """
@@ -120,37 +123,36 @@ class LLMAgent:
 
     def _execute_tool(self, tool_name: str, args_str: str):
         """
-        Execute the tool via AgenticExecutor, parsing args.
+        Execute the tool using AgenticExecutor if available, else raw TOOLS mapping.
 
         Args:
-            tool_name (str): Name of the method on AgenticExecutor (e.g. 'run_file_read')
-            args_str (str): Argument string from LLM (comma separated or space separated)
+            tool_name (str): Name of the tool (e.g. 'file_read')
+            args_str (str): Argument string from LLM (comma or space separated)
 
         Returns:
             str: Output from the tool
         """
-        # Map tool_name to AgenticExecutor method
-        method_map = {
-            'file_read': self.executor.run_file_read,
-            'file_write': self.executor.run_file_write,
-            'list_directory': self.executor.run_directory_list,
-            'find_file_upwards': self.executor.run_find_up,
-            'git_status': self.executor.run_git_status,
-            'git_commit': self.executor.run_git_commit,
-        }
-        # parse args (naively split by comma or space)
+        # Dynamically construct method_map
+        method_map = {}
+        for name in TOOLS:
+            exec_method = getattr(self.executor, f"run_{name}", None)
+            if callable(exec_method):
+                method_map[name] = exec_method
+            else:
+                method_map[name] = TOOLS[name]
+
+        # parse args (naively split by comma if present, else space)
         arglist = []
         if args_str:
-            # Try to split by comma if present, else space
             if ',' in args_str:
                 arglist = [a.strip() for a in args_str.split(',') if a.strip()]
             else:
                 arglist = [a.strip() for a in args_str.split() if a.strip()]
+
         if tool_name in method_map:
             return method_map[tool_name](*arglist)
-        # fallback: call raw function from TOOLS mapping as last resort
-        from codex_lite.main import TOOLS
-        return TOOLS[tool_name](*arglist)
+        else:
+            raise ValueError(f"Unknown tool: {tool_name}")
 
     def run(self, prompt: str) -> str:
         """
@@ -164,12 +166,7 @@ class LLMAgent:
             str: The final answer from the LLM.
         """
         messages = []
-        sys_msg = (
-            "You are a coding agent. You have access to the following tools:\n"
-            f"{self.tools_doc}\n"
-            "To use a tool, respond with TOOL: <tool_name>(<args>) on a line by itself.\n"
-            "When you are done, reply with FINAL ANSWER: <your answer>."
-        )
+        sys_msg = self._build_system_msg()
         messages.append({"role": "system", "content": sys_msg})
         messages.append({"role": "user", "content": prompt})
 
@@ -188,5 +185,4 @@ class LLMAgent:
             elif final:
                 return final
             else:
-                # If neither, append the message and prompt again
                 messages.append({"role": "assistant", "content": llm_response})
