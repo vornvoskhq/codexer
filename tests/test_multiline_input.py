@@ -3,7 +3,7 @@ import os
 import yaml
 import pytest
 
-import codex_lite.main as main_module
+from codex_lite.main import main, TOOLS
 
 class DummyAgent:
     def __init__(self):
