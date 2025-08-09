@@ -1,5 +1,5 @@
-# Configuration for Codex Agent tools
-# Set to false to disable certain tools
+## Agent configuration
+# Toggle individual tools (under `tools`) and features (under `features`).
 tools:
   file_read: true
   file_write: true
@@ -20,4 +20,11 @@ tools:
   build_docker_image: true
   # e.g., disable git operations by setting below to false
   # git_status: false
-  # git_commit: false
+features:
+  multiline_input: true   # enable multi-line prompts via prompt_toolkit
+  streaming: false
+  context_summarization: false
+  undo: false
+  retry: true
+  # additional feature toggles
+  run_tests_tool: true

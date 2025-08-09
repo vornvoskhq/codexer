@@ -3,4 +3,6 @@ GitPython
 requests
 PyYAML
 toml
+prompt_toolkit
+# prompt_toolkit for multiline input
 toml
