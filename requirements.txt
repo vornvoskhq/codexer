@@ -1,3 +1,4 @@
 pytest
 GitPython
 requests
+PyYAML

@@ -34,6 +34,14 @@ class LLMAgent:
         if not self.api_key:
             raise ValueError("OpenRouter API key must be set in OPENROUTER_API_KEY env variable.")
         self.executor = AgenticExecutor()
+        # Load tool config
+        import yaml
+        try:
+            cfg = yaml.safe_load(open('agent_tools_config.yaml')) or {}
+            self.tool_enabled = {k: v for k, v in cfg.get('tools', {}).items()}
+        except Exception:
+            # default all enabled
+            self.tool_enabled = {name: True for name in TOOLS}
         self.tools_doc = self._build_tools_doc()
 
     def _build_tools_doc(self) -> str:
@@ -46,109 +54,8 @@ class LLMAgent:
         import inspect
         lines = []
         for tool_name, fn in TOOLS.items():
-            try:
-                sig = str(inspect.signature(fn))
-            except (ValueError, TypeError):
-                continue
-            lines.append(f"{tool_name}{sig}")
-        return "\n".join(lines)
-
-    def _build_system_msg(self) -> str:
-        """
-        Build a SYSTEM message describing the agent's capabilities and tools.
-
-        Returns:
-            str: The system message for the LLM.
-        """
-        return (
-            "You are a fully autonomous coding agent. "
-            "You can read, write, list, find, and modify files in the current directory. "
-            "Use these tools to edit the codebase and persist changes.\n"
-            "You have access to these tools:\n"
-            f"{self.tools_doc}\n"
-            "To use a tool, respond with TOOL: <tool_name>(<args>) on a line by itself.\n"
-            "When you are done, reply with FINAL ANSWER: <your answer>."
-        )
-
-    def _send_to_llm(self, messages):
-        """
-        Send the conversation to OpenRouter LLM and return the response text.
-
-        Args:
-            messages (list): List of dicts with 'role' and 'content'.
-
-        Returns:
-            str: The LLM's response.
-        """
-        url = "https://openrouter.ai/api/v1/chat/completions"
-        headers = {
-            "Authorization": f"Bearer {self.api_key}",
-            "HTTP-Referer": "http://localhost",
-            "X-Title": "Codex Agent CLI",
-            "Content-Type": "application/json",
-        }
-        payload = {
-            "model": "glm-4.5-air",
-            "messages": messages,
-            "stream": False,
-        }
-        resp = requests.post(url, headers=headers, json=payload, timeout=60)
-        resp.raise_for_status()
-        data = resp.json()
-        return data["choices"][0]["message"]["content"]
-
-    def _parse_tool_call(self, text: str):
-        """
-        Parse the LLM response for a tool call in the format TOOL: <tool_name>(<args>).
-
-        Returns:
-            tuple (tool_name, args_str) or None.
-        """
-        m = re.search(r"TOOL:\s*(\w+)\((.*?)\)", text, re.DOTALL)
-        if m:
-            return m.group(1), m.group(2)
-        return None
-
-    def _parse_final_answer(self, text: str) -> Optional[str]:
-        """
-        Parse for a final answer marker 'FINAL ANSWER:'.
-
-        Returns:
-            str or None
-        """
-        m = re.search(r"FINAL ANSWER:\s*(.+)", text, re.DOTALL)
-        if m:
-            return m.group(1).strip()
-        return None
-
-    def _execute_tool(self, tool_name: str, args_str: str):
-        """
-        Execute the tool using AgenticExecutor if available, else raw TOOLS mapping.
-
-        Args:
-            tool_name (str): Name of the tool (e.g. 'file_read')
-            args_str (str): Argument string from LLM (comma or space separated)
-
-        Returns:
-            str: Output from the tool
-        """
-        # Dynamically construct method_map
-        method_map = {}
-        for name in TOOLS:
-            exec_method = getattr(self.executor, f"run_{name}", None)
-            if callable(exec_method):
-                method_map[name] = exec_method
-            else:
-                method_map[name] = TOOLS[name]
-
-        # parse args (naively split by comma if present, else space)
-        arglist = []
-        if args_str:
-            if ',' in args_str:
-                arglist = [a.strip() for a in args_str.split(',') if a.strip()]
-            else:
-                arglist = [a.strip() for a in args_str.split() if a.strip()]
-
+            if not self.tool_enabled.get(tool_name, True):
+            raise ValueError(f"Tool '{tool_name}' is disabled by configuration.")
         if tool_name in method_map:
             return method_map[tool_name](*arglist)
         else:
