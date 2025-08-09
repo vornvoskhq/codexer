@@ -9,7 +9,7 @@ from integration.framework.agent import AgenticExecutor
 import sys
 import importlib
 
-codex_main = importlib.import_module("codex-lite.main".replace("-", "_"))
+codex_main = importlib.import_module("codex_lite.main")
 TOOLS = codex_main.TOOLS
 
 class LLMAgent:
