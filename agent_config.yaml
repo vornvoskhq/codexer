@@ -1,0 +1,30 @@
+## Agent configuration
+# Toggle individual tools (under `tools`) and features (under `features`).
+tools:
+  file_read: true
+  file_write: true
+  list_directory: true
+  find_file_upwards: true
+  git_status: true
+  git_commit: true
+  parse_tree: true
+  semantic_analysis: true
+  detect_project_type: true
+  list_dependencies: true
+  plan_tasks: true
+  coordinate_agents: true
+  lint_file: true
+  autocomplete_code: true
+  refactor_extract_method: true
+  run_django_command: true
+  build_docker_image: true
+  # e.g., disable git operations by setting below to false
+  # git_status: false
+features:
+  multiline_input: true   # enable multi-line prompts via prompt_toolkit
+  streaming: false
+  context_summarization: false
+  undo: false
+  retry: true
+  # additional feature toggles
+  run_tests_tool: true

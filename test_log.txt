@@ -1,0 +1,128 @@
+Installing/updating dependencies from requirements.txt...
+Requirement already satisfied: pytest in ./.venv/lib/python3.12/site-packages (from -r requirements.txt (line 1)) (8.4.1)
+Requirement already satisfied: GitPython in ./.venv/lib/python3.12/site-packages (from -r requirements.txt (line 2)) (3.1.45)
+Requirement already satisfied: requests in ./.venv/lib/python3.12/site-packages (from -r requirements.txt (line 3)) (2.32.4)
+Requirement already satisfied: PyYAML in ./.venv/lib/python3.12/site-packages (from -r requirements.txt (line 4)) (6.0.2)
+Requirement already satisfied: toml in ./.venv/lib/python3.12/site-packages (from -r requirements.txt (line 5)) (0.10.2)
+Requirement already satisfied: prompt_toolkit in ./.venv/lib/python3.12/site-packages (from -r requirements.txt (line 6)) (3.0.51)
+Requirement already satisfied: iniconfig>=1 in ./.venv/lib/python3.12/site-packages (from pytest->-r requirements.txt (line 1)) (2.1.0)
+Requirement already satisfied: packaging>=20 in ./.venv/lib/python3.12/site-packages (from pytest->-r requirements.txt (line 1)) (25.0)
+Requirement already satisfied: pluggy<2,>=1.5 in ./.venv/lib/python3.12/site-packages (from pytest->-r requirements.txt (line 1)) (1.6.0)
+Requirement already satisfied: pygments>=2.7.2 in ./.venv/lib/python3.12/site-packages (from pytest->-r requirements.txt (line 1)) (2.19.2)
+Requirement already satisfied: gitdb<5,>=4.0.1 in ./.venv/lib/python3.12/site-packages (from GitPython->-r requirements.txt (line 2)) (4.0.12)
+Requirement already satisfied: charset_normalizer<4,>=2 in ./.venv/lib/python3.12/site-packages (from requests->-r requirements.txt (line 3)) (3.4.2)
+Requirement already satisfied: idna<4,>=2.5 in ./.venv/lib/python3.12/site-packages (from requests->-r requirements.txt (line 3)) (3.10)
+Requirement already satisfied: urllib3<3,>=1.21.1 in ./.venv/lib/python3.12/site-packages (from requests->-r requirements.txt (line 3)) (2.5.0)
+Requirement already satisfied: certifi>=2017.4.17 in ./.venv/lib/python3.12/site-packages (from requests->-r requirements.txt (line 3)) (2025.8.3)
+Requirement already satisfied: wcwidth in ./.venv/lib/python3.12/site-packages (from prompt_toolkit->-r requirements.txt (line 6)) (0.2.13)
+Requirement already satisfied: smmap<6,>=3.0.1 in ./.venv/lib/python3.12/site-packages (from gitdb<5,>=4.0.1->GitPython->-r requirements.txt (line 2)) (5.0.2)
+Running pytest...
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-8.4.1, pluggy-1.6.0
+rootdir: /mnt/c/Users/Vorn/Projects/codexer
+collected 30 items / 4 errors
+
+==================================== ERRORS ====================================
+___________________ ERROR collecting tests/test_chat_mode.py ___________________
+.venv/lib/python3.12/site-packages/_pytest/python.py:498: in importtestmodule
+    mod = import_path(
+.venv/lib/python3.12/site-packages/_pytest/pathlib.py:587: in import_path
+    importlib.import_module(module_name)
+/usr/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1331: in _find_and_load_unlocked
+    ???
+<frozen importlib._bootstrap>:935: in _load_unlocked
+    ???
+.venv/lib/python3.12/site-packages/_pytest/assertion/rewrite.py:186: in exec_module
+    exec(co, module.__dict__)
+tests/test_chat_mode.py:5: in <module>
+    from codex_lite.main import main, TOOLS
+E     File "/mnt/c/Users/Vorn/Projects/codexer/codex_lite/main.py", line 126
+E       else:
+E       ^^^^
+E   SyntaxError: invalid syntax
+___________________ ERROR collecting tests/test_llm_agent.py ___________________
+.venv/lib/python3.12/site-packages/_pytest/python.py:498: in importtestmodule
+    mod = import_path(
+.venv/lib/python3.12/site-packages/_pytest/pathlib.py:587: in import_path
+    importlib.import_module(module_name)
+/usr/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1331: in _find_and_load_unlocked
+    ???
+<frozen importlib._bootstrap>:935: in _load_unlocked
+    ???
+.venv/lib/python3.12/site-packages/_pytest/assertion/rewrite.py:186: in exec_module
+    exec(co, module.__dict__)
+tests/test_llm_agent.py:4: in <module>
+    from integration.framework.llm_agent import LLMAgent
+E     File "/mnt/c/Users/Vorn/Projects/codexer/integration/framework/llm_agent.py", line 94
+E       raise ValueError(f"Tool '{tool_name}' is disabled by configuration.")
+E       ^^^^^
+E   IndentationError: expected an indented block after 'if' statement on line 93
+_______________ ERROR collecting tests/test_llm_agent_prompts.py _______________
+.venv/lib/python3.12/site-packages/_pytest/python.py:498: in importtestmodule
+    mod = import_path(
+.venv/lib/python3.12/site-packages/_pytest/pathlib.py:587: in import_path
+    importlib.import_module(module_name)
+/usr/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1331: in _find_and_load_unlocked
+    ???
+<frozen importlib._bootstrap>:935: in _load_unlocked
+    ???
+.venv/lib/python3.12/site-packages/_pytest/assertion/rewrite.py:186: in exec_module
+    exec(co, module.__dict__)
+tests/test_llm_agent_prompts.py:6: in <module>
+    from integration.framework.llm_agent import LLMAgent
+E     File "/mnt/c/Users/Vorn/Projects/codexer/integration/framework/llm_agent.py", line 94
+E       raise ValueError(f"Tool '{tool_name}' is disabled by configuration.")
+E       ^^^^^
+E   IndentationError: expected an indented block after 'if' statement on line 93
+________________ ERROR collecting tests/test_multiline_input.py ________________
+.venv/lib/python3.12/site-packages/_pytest/python.py:498: in importtestmodule
+    mod = import_path(
+.venv/lib/python3.12/site-packages/_pytest/pathlib.py:587: in import_path
+    importlib.import_module(module_name)
+/usr/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1331: in _find_and_load_unlocked
+    ???
+<frozen importlib._bootstrap>:935: in _load_unlocked
+    ???
+.venv/lib/python3.12/site-packages/_pytest/assertion/rewrite.py:186: in exec_module
+    exec(co, module.__dict__)
+tests/test_multiline_input.py:6: in <module>
+    from codex_lite.main import main, TOOLS
+E     File "/mnt/c/Users/Vorn/Projects/codexer/codex_lite/main.py", line 126
+E       else:
+E       ^^^^
+E   SyntaxError: invalid syntax
+=========================== short test summary info ============================
+ERROR tests/test_chat_mode.py
+ERROR tests/test_llm_agent.py
+ERROR tests/test_llm_agent_prompts.py
+ERROR tests/test_multiline_input.py
+!!!!!!!!!!!!!!!!!!! Interrupted: 4 errors during collection !!!!!!!!!!!!!!!!!!!!
+============================== 4 errors in 5.04s ===============================

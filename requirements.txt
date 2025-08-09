@@ -1,0 +1,9 @@
+pytest
+GitPython
+requests
+PyYAML
+toml
+prompt_toolkit
+PyYAML
+toml
+# prompt_toolkit for multiline input
