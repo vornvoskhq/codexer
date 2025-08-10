@@ -1,0 +1,74 @@
+# ============================================
+# Test Configuration
+# ============================================
+
+# Python command to use (python, python3, etc.)
+PYTHON_CMD="python3"
+
+# Virtual environment directory
+VENV_DIR=".venv"
+
+# Test directories to search for tests (space-separated)
+TEST_DIRS="tests/"
+
+# Test patterns to include (space-separated)
+TEST_PATTERNS=""
+
+# Test patterns to exclude (space-separated)
+TEST_EXCLUDE_PATTERNS=""
+
+# Maximum number of test failures before stopping (0 = unlimited)
+MAX_FAILURES=0
+
+# Test timeout in seconds (0 = no timeout)
+TEST_TIMEOUT=30
+
+# Whether to run linters (1 = yes, 0 = no)
+RUN_LINTERS=1
+
+# Linter commands (space-separated)
+LINTER_COMMANDS="flake8"
+
+# Whether to generate coverage reports (1 = yes, 0 = no)
+GENERATE_COVERAGE=1
+
+# Coverage report format (term, html, xml, annotate, json, lcov, none)
+COVERAGE_FORMAT="term"
+
+# Whether to open coverage report in browser (1 = yes, 0 = no)
+# Only applies when COVERAGE_FORMAT=html
+OPEN_COVERAGE_REPORT=0
+
+# Requirements files (space-separated, in order of installation)
+REQUIREMENTS_FILES="requirements-dev.txt requirements-test.txt requirements.txt"
+
+# Project-specific setup command (e.g., "npm install", "bundle install")
+SETUP_COMMAND=""
+
+# Additional test commands to run (space-separated)
+# Format: "command1:description1,command2:description2"
+CUSTOM_TEST_COMMANDS=""
+
+# Whether to use colored output (1 = yes, 0 = no)
+COLOR_OUTPUT=1
+
+# Log level (0 = error, 1 = warn, 2 = info, 3 = debug, 4 = trace)
+LOG_LEVEL=2
+
+# Whether to skip virtual environment creation (1 = skip, 0 = create if needed)
+NO_VENV=0
+
+# Whether to install dependencies (1 = install, 0 = skip)
+INSTALL_DEPS=1
+
+# Whether to run setup command (1 = run, 0 = skip)
+RUN_SETUP=1
+
+# Whether to run custom test commands (1 = run, 0 = skip)
+RUN_CUSTOM_TESTS=1
+
+# Whether to run pytest (1 = run, 0 = skip)
+RUN_PYTEST=1
+
+# Additional pytest arguments (space-separated)
+PYTEST_ARGS=""

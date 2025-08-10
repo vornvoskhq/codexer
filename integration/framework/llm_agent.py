@@ -46,6 +46,8 @@ class LLMAgent:
             str: Multiline string listing all available tools.
         """
         import inspect
+        from types import ModuleType, FunctionType, MethodType
+        
         tool_list = [
             ("file_tools", file_tools),
             ("git_tools", git_tools),
@@ -55,13 +57,36 @@ class LLMAgent:
             ("ide_tools", ide_tools),
             ("specialized_tools", specialized_tools),
         ]
+        
         lines = []
         for modname, mod in tool_list:
-            for name, fn in vars(mod).items():
-                if callable(fn) and not name.startswith("_"):
-                    sig = str(inspect.signature(fn))
-                    lines.append(f"{modname}.{name}{sig}")
-        return "\n".join(lines)
+            if not isinstance(mod, ModuleType):
+                continue
+                
+            for name, obj in vars(mod).items():
+                # Skip private attributes and modules
+                if name.startswith("_"):
+                    continue
+                    
+                # Handle functions and methods
+                if callable(obj):
+                    try:
+                        sig = inspect.signature(obj)
+                        lines.append(f"{modname}.{name}{sig}")
+                    except (ValueError, TypeError):
+                        # Skip objects that don't have a valid signature
+                        continue
+                # Handle classes - get their methods
+                elif inspect.isclass(obj):
+                    for method_name, method in inspect.getmembers(obj, inspect.isfunction):
+                        if not method_name.startswith("_"):
+                            try:
+                                sig = inspect.signature(method)
+                                lines.append(f"{modname}.{name}.{method_name}{sig}")
+                            except (ValueError, TypeError):
+                                continue
+                                
+        return "\n".join(sorted(lines))
 
     def _send_to_llm(self, messages):
         """
