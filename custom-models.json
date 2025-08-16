@@ -1,0 +1,240 @@
+{
+  "$schema": "https://plandex.ai/schemas/models-input.schema.json",
+  "models": [
+    {
+      "modelId": "meta-llama/llama-4-maverick",
+      "publisher": "meta-llama",
+      "description": "Meta Llama 4 Maverick - Free tier with multimodal support",
+      "defaultMaxConvoTokens": 16000,
+      "maxTokens": 32000,
+      "maxOutputTokens": 4096,
+      "reservedOutputTokens": 4096,
+      "preferredOutputFormat": "xml",
+      "hasImageSupport": true,
+      "providers": [
+        {
+          "provider": "openrouter",
+          "modelName": "meta-llama/llama-4-maverick"
+        }
+      ]
+    },
+    {
+      "modelId": "google/gemini-1.5-pro-latest",
+      "publisher": "google",
+      "description": "Google Gemini 1.5 Pro - Free tier with long context",
+      "defaultMaxConvoTokens": 24000,
+      "maxTokens": 48000,
+      "maxOutputTokens": 4096,
+      "reservedOutputTokens": 4096,
+      "preferredOutputFormat": "xml",
+      "hasImageSupport": true,
+      "providers": [
+        {
+          "provider": "openrouter",
+          "modelName": "google/gemini-1.5-pro-latest"
+        }
+      ]
+    },
+    {
+      "modelId": "mistralai/mistral-small-2402",
+      "publisher": "mistralai",
+      "description": "Mistral Small 2402 - Free tier with function calling",
+      "defaultMaxConvoTokens": 18000,
+      "maxTokens": 36000,
+      "maxOutputTokens": 4096,
+      "reservedOutputTokens": 4096,
+      "preferredOutputFormat": "tool-call-json",
+      "hasImageSupport": true,
+      "providers": [
+        {
+          "provider": "openrouter",
+          "modelName": "mistralai/mistral-small-2402"
+        }
+      ]
+    },
+    {
+      "modelId": "deepseek/deepseek-coder",
+      "publisher": "deepseek",
+      "description": "DeepSeek Coder - Free tier, technical domain optimized",
+      "defaultMaxConvoTokens": 16000,
+      "maxTokens": 32000,
+      "maxOutputTokens": 4096,
+      "reservedOutputTokens": 4096,
+      "preferredOutputFormat": "tool-call-json",
+      "hasImageSupport": false,
+      "providers": [
+        {
+          "provider": "openrouter",
+          "modelName": "deepseek/deepseek-coder"
+        }
+      ]
+    },
+    {
+      "modelId": "deepseek/deepseek-chat",
+      "publisher": "deepseek",
+      "description": "DeepSeek Chat - Free tier, dialogue optimized",
+      "defaultMaxConvoTokens": 16000,
+      "maxTokens": 32000,
+      "maxOutputTokens": 4096,
+      "reservedOutputTokens": 4096,
+      "preferredOutputFormat": "tool-call-json",
+      "hasImageSupport": false,
+      "providers": [
+        {
+          "provider": "openrouter",
+          "modelName": "deepseek/deepseek-chat"
+        }
+      ]
+    },
+    {
+      "modelId": "deepseek/deepseek-moe",
+      "publisher": "deepseek",
+      "description": "DeepSeek MoE - Free tier, reasoning specialized",
+      "defaultMaxConvoTokens": 16000,
+      "maxTokens": 32000,
+      "maxOutputTokens": 4096,
+      "reservedOutputTokens": 4096,
+      "preferredOutputFormat": "tool-call-json",
+      "hasImageSupport": false,
+      "providers": [
+        {
+          "provider": "openrouter",
+          "modelName": "deepseek/deepseek-moe"
+        }
+      ]
+    },
+    {
+      "modelId": "nvidia/nemotron-3-8b",
+      "publisher": "nvidia",
+      "description": "NVIDIA Nemotron 3 8B - Free tier, NVIDIA optimized",
+      "defaultMaxConvoTokens": 12000,
+      "maxTokens": 8192,
+      "maxOutputTokens": 2048,
+      "reservedOutputTokens": 2048,
+      "preferredOutputFormat": "tool-call-json",
+      "hasImageSupport": false,
+      "providers": [
+        {
+          "provider": "openrouter",
+          "modelName": "nvidia/nemotron-3-8b"
+        }
+      ]
+    },
+    {
+      "modelId": "nousresearch/deephermes-llama-3-8b",
+      "publisher": "nousresearch",
+      "description": "DeepHermes Llama 3 8B - Free tier, balanced performance",
+      "defaultMaxConvoTokens": 12000,
+      "maxTokens": 8192,
+      "maxOutputTokens": 2048,
+      "reservedOutputTokens": 2048,
+      "preferredOutputFormat": "tool-call-json",
+      "hasImageSupport": false,
+      "providers": [
+        {
+          "provider": "openrouter",
+          "modelName": "nousresearch/deephermes-llama-3-8b"
+        }
+      ]
+    },
+    {
+      "modelId": "openrouter/optimus",
+      "publisher": "openrouter",
+      "description": "OpenRouter Optimus - Free tier, API optimized",
+      "defaultMaxConvoTokens": 12000,
+      "maxTokens": 16000,
+      "maxOutputTokens": 2048,
+      "reservedOutputTokens": 2048,
+      "preferredOutputFormat": "tool-call-json",
+      "hasImageSupport": false,
+      "providers": [
+        {
+          "provider": "openrouter",
+          "modelName": "openrouter/optimus"
+        }
+      ]
+    },
+    {
+      "modelId": "openrouter/quasar",
+      "publisher": "openrouter",
+      "description": "OpenRouter Quasar - Free tier, reasoning focused",
+      "defaultMaxConvoTokens": 12000,
+      "maxTokens": 16000,
+      "maxOutputTokens": 2048,
+      "reservedOutputTokens": 2048,
+      "preferredOutputFormat": "tool-call-json",
+      "hasImageSupport": false,
+      "providers": [
+        {
+          "provider": "openrouter",
+          "modelName": "openrouter/quasar"
+        }
+      ]
+    }
+  ],
+  "providers": [
+    {
+      "name": "openrouter",
+      "baseUrl": "https://openrouter.ai/api/v1",
+      "apiKeyEnvVar": "OPENROUTER_API_KEY"
+    }
+  ],
+"modelPacks": [
+  {
+    "name": "free-tier-optimal",
+    "description": "Maximum performance using only free OpenRouter models",
+    "$schema": "https://plandex.ai/schemas/model-pack-inline.schema.json",
+    "planner": "meta-llama/llama-4-maverick",
+    "architect": "meta-llama/llama-4-maverick",
+    "coder": "deepseek/deepseek-coder",
+    "summarizer": "mistralai/mistral-small-2402",
+    "builder": "deepseek/deepseek-coder",
+    "wholeFileBuilder": "meta-llama/llama-4-maverick",
+    "names": "openrouter/optimus",
+    "commitMessages": "deepseek/deepseek-chat",
+    "autoContinue": "deepseek/deepseek-moe"
+  },
+  {
+    "name": "reasoning-focused",
+    "description": "Optimized for complex reasoning tasks using free models",
+    "$schema": "https://plandex.ai/schemas/model-pack-inline.schema.json",
+    "planner": "deepseek/deepseek-moe",
+    "architect": "google/gemini-1.5-pro-latest",
+    "coder": "deepseek/deepseek-coder",
+    "summarizer": "meta-llama/llama-4-maverick",
+    "builder": "deepseek/deepseek-coder",
+    "wholeFileBuilder": "google/gemini-1.5-pro-latest",
+    "names": "openrouter/quasar",
+    "commitMessages": "deepseek/deepseek-chat",
+    "autoContinue": "deepseek/deepseek-moe"
+  },
+  {
+    "name": "performance-balanced",
+    "description": "Balance between performance and efficiency with free models",
+    "$schema": "https://plandex.ai/schemas/model-pack-inline.schema.json",
+    "planner": "meta-llama/llama-4-maverick",
+    "architect": "google/gemini-1.5-pro-latest",
+    "coder": "deepseek/deepseek-coder",
+    "summarizer": "mistralai/mistral-small-2402",
+    "builder": "meta-llama/llama-4-maverick",
+    "wholeFileBuilder": "google/gemini-1.5-pro-latest",
+    "names": "nousresearch/deephermes-llama-3-8b",
+    "commitMessages": "deepseek/deepseek-chat",
+    "autoContinue": "meta-llama/llama-4-maverick"
+  },
+  {
+    "name": "lightweight-fast",
+    "description": "Fast responses with lower resource usage",
+    "$schema": "https://plandex.ai/schemas/model-pack-inline.schema.json",
+    "planner": "nvidia/nemotron-3-8b",
+    "architect": "nousresearch/deephermes-llama-3-8b",
+    "coder": "nvidia/nemotron-3-8b",
+    "summarizer": "openrouter/optimus",
+    "builder": "nvidia/nemotron-3-8b",
+    "wholeFileBuilder": "deepseek/deepseek-coder",
+    "names": "openrouter/optimus",
+    "commitMessages": "openrouter/optimus",
+    "autoContinue": "nvidia/nemotron-3-8b"
+  }
+]
+}
